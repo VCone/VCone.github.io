@@ -1,14 +1,372 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0024)http://vcone.co.uk/labs/ -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>VC:One - Art / Design / Code of Valerio Charles - http://vcone.co.uk/ </title>
+<style type="text/css">
+<!--
+body {
+	background: #FFFFFF;
+	margin: 0;
+	padding: 0;
+	color: #000;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 100%;
+	line-height: 1.4;
+}
+
+
+ul, ol, dl { 
+	padding: 0;
+	margin: 0;
+}
+h1, h2, h3, h4, h5, h6, p {
+	margin-top: 0;	 
+	padding-right: 15px;
+	padding-left: 15px; /
+	color: #000;
+}
+a img { 
+	border: none;
+}
+
+/*
+a:link {
+	color:#000;
+	text-decoration: underline; 
+}
+a:visited {
+	color: #09C;
+	text-decoration: underline;
+}
+a:hover, a:active, a:focus {
+	color: #09C; 
+	text-decoration: none;
+	right: inherit;
+}
+*/
+
+a:link{
+  color: #09C; /* link colour */ 
+}
+a:visited{
+  color: #09C; /* clicked */ 
+}
+a:hover{
+  color: #09C; /* rollover */ 
+}
+a:focus{
+  color: #09C; /* focus */ 
+}
+a:active{
+  color: #09C; /* active */ 
+}
+
+.container {
+	width: 80%;
+	max-width: 1260px;
+	min-width: 780px;
+	background: #FFF;
+	margin: 0 auto; 
+}
+
+.header {
+	background: #FFFFFF;
+	color: #4E5869;
+}
+
+
+.sidebar1 {
+	float: left;
+	width: 20%;
+	background: #FFFFFF;
+	padding-bottom: 10px;
+	font-size:12px;
+}
+.content {
+	padding: 10px 0;
+	width: 60%; height: 10%;
+	float: left;
+}
+.sidebar2 {
+	float: left;
+	width: 20%;
+	background: #FFFFFF;
+	padding: 10px 0;
+}
+
+
+.content ul, .content ol { 
+	padding: 0 15px 15px 40px; 
+}
+
+
+ul.nav {
+	list-style: none; 
+	border-top: 1px solid #666; 
+	margin-bottom: 15px; 
+}
+ul.nav li {
+	border-bottom: 1px solid #666; 
+}
+ul.nav a, ul.nav a:visited { 
+	padding: 5px 5px 5px 15px;
+	display: block; 
+	text-decoration: none;
+	background: #FFFFFF;
+	color: #000;
+}
+ul.nav a:hover, ul.nav a:active, ul.nav a:focus 
+{ 
+	background: #FFFFFF;
+	color: #09F;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+
+.footer 
+{
+	padding: 10px 0;
+	background: #FFFFFF;
+	position: relative;
+	clear: both; 
+}
+
+
+.fltrt 
+{  
+	float: right;
+	margin-left: 8px;
+}
+.fltlft 
+{ 
+	float: left;
+	margin-right: 8px;
+}
+.clearfloat 
+{ 
+	clear:both;
+	height:0;
+	font-size: 1px;
+	line-height: 0px;
+}
+.container .header table tr td {
+	right: auto;
+	text-align: left;
+	font-family: "Arial Black", Gadget, sans-serif;
+	font-size: 9px;
+}
+#ui_email {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	font-style: normal;
+	color: #036;
+	line-height: normal;
+	text-align: left;
+}
+#ui_VC1_Heading {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 24px;
+	font-weight: bold;
+	text-align: left;
+}
+#ui_VC1_BlogLabs {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	color: #036;
+	text-align: left;
+}
+#ui_Folio {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	color: #036;
+	text-align: left;
+	top: auto;
+}
+#ui_header_text1 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 32px;
+	text-align: left;
+	line-height: normal;
+}
+#_ui_header_v1 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 24px;
+	font-weight: bold;
+}
+#_ui_header_v2 {
+	font-family: "Arial Black", Gadget, sans-serif;
+	font-size: 40px;
+	color: #4E5869;
+	max-height: 5px;
+}
+#ui_vcone_text {
+	font-family: "Arial Black", Gadget, sans-serif;
+	font-size: 44px;
+	color: #000;
+	text-align: left;
+}
+#ui_subheading {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	color: #09C;
+	text-align: left;
+}
+#ui_emailv2 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	font-weight: bold;
+}
+#ui_NavOption_text {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	font-weight: bold;
+	color: #B5D0E8;
+	background-color: #09C;
+}
+#ui_NavOptionSubhead_text {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	font-weight: bold;
+	color: #036;
+	background-color: #FFFFFF;
+}
+
+#ui_valerio_charles {
+	color: #000;
+	font-size: 24px;
+}
+#ui_samples_quotes {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	color: #09C;
+}
+#ui_options_selected {
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	color: #FFF;
+	background-color: #09C;
+}
+#ui_check_out {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	color: #09C;
+}
+#ui_footer_text {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	color: #000;
+	text-align: center;
+}
+#ui_info_text {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000;
+	font-weight: normal;
+}
+#ui_info_txt_bold {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+}
+-->
+</style><!--[if lte IE 7]>
+<style>
+.content { margin-right: -1px; } 
+ul.nav a { zoom: 1; }  
+</style>
+<![endif]--></head>
+
 <body>
 
-<h1>Hello World, fromVC:One... My First GITHUB page</h1>
+<div class="container">
+  <div class="header"> 
+    <!-- end .header -->
+    <table width="100%" border="0">
+      <tbody><tr>
+        <td width="86%" height="152"><table width="100%" border="0">
+          <tbody><tr>
+            <th width="17%" height="37" id="ui_vcone_text" scope="row"><img src="./workfiles/VC1_Twitter_logo_v1_02.jpg" alt="VC:One logo" name="VC:One logo" width="100%" height="300%" id="VC:One logo" style="background: #FFFFFF; display:table-row;"></th>
+            <th width="47%" id="ui_vcone_text" scope="row">VC:One<br>
+              <span font="" color="#3399CC" size="2" face="Arial, Helvetica, sans-serif"> <span id="ui_subheading">The Art / Design / Code of :<br>
+              <span id="ui_valerio_charles">Valerio Charles</span></span></span></th>
+            <th width="36%" scope="row">&nbsp;</th>
+            </tr>
+          </tbody></table>
+          <table width="100%" border="0" align="left">
+            <tbody><tr>
+              <th width="46%" height="99" id="ui_VC1_BlogLabs" scope="row"><span id="ui_check_out">goto :</span> // &gt; <a href="http://blog.vcone.co.uk/" target="_self">ARTICLES</a> // &gt; <span id="ui_options_selected">CODE LABS</span> // &gt; <a href="http://vcone.co.uk/" target="_self">FOLIO</a></th>
+              <td width="8%">&nbsp;</td>
+              <td width="46%" id="ui_Folio"><span id="ui_emailv2"><span id="ui_samples_quotes">( Enquiries / Samples / Quotes )  = contact :</span> info@VCOne.co.uk</span><br>
+              (c) 1500 BC - VC:One ( Art &amp; Design since the Beginning of Civilisation, know what I mean?)</td>
+            </tr>
+        </tbody></table></td>
+      </tr>
+    </tbody></table>
+  </div>
+  <div class="sidebar1">
+    <ul class="nav">
+      <li id="ui_NavOption_text">CODE LABS</li>
+      <li><br>
+        Programming experiments by exploring ideas &amp; techniques for Image, Video &amp; Audio editing.<br>
+        <br></li>
+      <li id="ui_NavOptionSubhead_text">IMAGE</li>
+      <a href="http://vcone.co.uk/labs/#"> &gt; JPEG Repair v.1.0 [ demo: HTML5 ] </a>
+      <a href="http://vcone.co.uk/labs/#"> &gt; JPEG Repair v.2.0 [ demo: Flash ] </a>
+      <a href="http://vcone.co.uk/labs/#"> &gt; Extract Audio's Cover Art [ demo: Flash ] </a>
+      <a href="http://vcone.co.uk/labs/#"> &gt; Extract MP3's Cover Art [ demo: HTML5 ] </a>
+      <a href="http://vcone.co.uk/labs/#"> &gt; PhotoShop's H-S-L from a Colour Matrix</a>
+      <a href="http://vcone.co.uk/labs/#"> &gt; Palette Colourisation [ demo: Flash ] </a>
+      <a href="http://vcone.co.uk/labs/#"> &gt; Magic Scissors [ demo: Flash ]</a>
+      <a href="http://vcone.co.uk/labs/#"> &gt; Photo Filters Experimental </a>
+      <a href="http://vcone.co.uk/labs/#"> &gt; Photo Vignette: Another VC1 Method</a>
+      <a href="http://vcone.co.uk/labs/#"> &gt; Image / Pixel effecting with Audio FX</a> 
+      <li id="ui_NavOptionSubhead_text">VIDEO</li>
+      <a href="http://vcone.co.uk/labs/#"> &gt; Video Data Handling [ demo: Flash ]</a>
+      <a href="http://vcone.co.uk/labs/#"> &gt; B&amp;W (Greyscale) Video Colourisation</a>
+      <a href="http://vcone.co.uk/labs/#"> &gt; Optical Flow  (Basic frame morphing) </a>
+      <a href="http://vcone.co.uk/labs/#"> &gt; Background Removal</a>
+      <a href="http://vcone.co.uk/labs/#"> &gt; Visual Effects ( various )</a>
+      <li id="ui_NavOptionSubhead_text">AUDIO</li>
+      <a href="http://vcone.co.uk/labs/#"> &gt; Calculating Audio Levels </a>
+      <a href="http://vcone.co.uk/labs/#"> &gt; Audio Player [ demo: HTML5 ] </a>
+      <a href="http://vcone.co.uk/labs/#"> &gt; VST Audio Plugin [ demo: Flash ]</a>
+      <a href="http://vcone.co.uk/labs/#"> &gt; Sound from Pixels</a>
+    </ul>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+  <!-- end .sidebar1 --></div>
+  <div class="content">
+    <h1><img src="./workfiles/vc1_splash_pic_01.png" width="100%" height="65%"></h1>
+<p>&nbsp;</p>
+<h4>&nbsp;</h4>
+    <!-- end .content --></div>
+  <div class="sidebar2">
+    <table width="100%" border="0">
+      <tbody><tr>
+        <th scope="row">&nbsp;</th>
+      </tr>
+      <tr>
+        <th scope="row">&nbsp;</th>
+      </tr>
+    </tbody></table>
+    <h4>
+      <span id="ui_info_text">My name is <span id="ui_info_txt_bold">Valerio</span>, a-k-a Mister  <span id="ui_info_txt_bold">Charles...</span> but you can just call me  <span id="ui_info_txt_bold">VC:One</span>...&nbsp;<br><br>
+      I am a freelance designer &amp; programmer specialising in producing delicious visual and audio effects.<br><br>
+      I can handle design solutions with static images, motion graphics, interactive user interfaces. I can also handle the coding of some audio effects.<br><br>
+      Over time I've developed skills in Digital illustration, Photo/Video editing, 3D modelling, Audio engineering + Visual effects programming.<br><br>
+      I have knowledge of Photoshop, Flash, After Effects, 3D Studio MAX, Sculptris. <br><br>I can code with : <br> AS3 (Flash) / PHP / JS / HTML <br>but understand C-like languages : <br>(C++ / JAVA / C# / SWIFT)</span><br><br><br>  
+    </h4>
+    <p>&nbsp;</p>
+  <!-- end .sidebar2 --></div>
+  <div class="footer">
+    <p id="ui_footer_text">Thanks for visiting... contact me at : info@VCOne.co.uk</p>
+    <!-- end .footer --></div>
+  <!-- end .container --></div>
 
-<button type="button"
-onclick="document.getElementById('demo').innerHTML = Date()">
-Click me to display Date and Time.</button>
 
-<p id="demo"></p>
-
-</body>
-</html> 
+<iframe src="./00 - VC_One_Labs_v1_files/widget.html" style="overflow: hidden; position: fixed; height: 400px; width: 375px; bottom: 7px; right: 11px; border: none; z-index: 2147483646; -webkit-user-select: none; display: none; background: none;"></iframe></body></html>
