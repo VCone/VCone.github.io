@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html>
+<head> <meta charset="utf-8"/> </head>
+<body>
+
+<div>
+
+<video id="video_mse" > </video>
+
+</div>
+
+<script>
+
+
+//var assetURL = "testloop.mp4";
+var assetURL = "https://github.com/VCone/VCone.github.io/raw/master/public/demos/testloop.mp4";
+
+//# use correct mime/codecs or else Error is "source not open"...
+var mimeCodec = 'video/mp4; codecs="avc1.42C01E"';
+
+var mediaSource; var sourceBuffer;
+
+var video = document.getElementById( "video_mse" );
+
+video.onclick = vid_togglePlay; //# for playing/pausing
+video.ontimeupdate = vid_checkTime; //# for looping
+
+//# handle play/pause (because controls are hidden)
+function vid_togglePlay() 
+{
+	if( video.paused == true ) { video.play(); }
+	else { video.pause(); }
+}
+
+//# handle looping...
+function vid_checkTime() 
+{
+	if( video.currentTime == video.duration)
+	{ 
+		video.currentTime = 0; 
+		video.play(); 
+	}
+  
+}
+
+
+if ( 'MediaSource' in window && MediaSource.isTypeSupported(mimeCodec) ) 
+{
+	mediaSource = new MediaSource;
+	
+	video.src = URL.createObjectURL(mediaSource);
+	mediaSource.addEventListener('sourceopen', sourceOpen);
+} 
+else 
+{ console.error('Unsupported MIME type or codec: ', mimeCodec); }
+
+function sourceOpen() 
+{
+	//console.log(this.readyState); // open
+	var mediaSource = this;
+	sourceBuffer = mediaSource.addSourceBuffer(mimeCodec);
+	
+	fetchAB(assetURL, function (buf) {
+		sourceBuffer.addEventListener('updateend', function() {
+		mediaSource.endOfStream();
+		video.play();
+	  });
+	  
+	  sourceBuffer.appendBuffer(buf);
+	
+	});
+};
+
+function fetchAB (url, callbackfunc ) 
+{
+	console.log("loading file: " + url);
+	var xhr = new XMLHttpRequest;
+	xhr.open('get', url);
+	xhr.responseType = 'arraybuffer';
+	xhr.onload = function() { callbackfunc( xhr.response ); }
+	xhr.send();
+}
+	  
+</script>
+</body>
+</html>
+
