@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<!-- button Choose Media -->
+<input type="file" id="choose_media" accept=".mp4" />
+
+<br> <br>
+
+<p style="font-family: Arial">
+<b>TEST PREVIEW</b> OF FIRST FRAME <br> (from corrupted 720p MP4 as recorded by VideoLan's VLC software)
+<p>
+
+<br>
+
+<!-- Canvas to display a decoded frame -->
+<video id="myVideo" width="640" controls playsinline >
+</video>
+
+
+<script>
+
+//# useful variables to have...
+
+var myVideo; //# access a <video> tag
+var file; var file_loaded_bytes; //# File Object and also Array for file's loaded bytes
+var temp_Pos = 0; var temp_Size = 0; //# keep track of positions and sizes per NALU
+var pos_nalu_SEI = -1; var pos_nalu_IDR = -1; //# positions of our required NALUs
+var temp_int = 0; var temp_str = ""; var temp_Arr = []; //# useful vars for holding temporary values
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//# load header MP4
+let bytes_MP4_Header = -1;
+let file_MP4_Header = "vc_vlc_mp4_header_web.bin"; //hard coded MP4 header
+
+//# pre-load the MP4 header
+fetch ( file_MP4_Header )
+.then( (response) => 	{
+							if (!response.ok) { throw new Error(`HTTP error, status = ${response.status}`); }
+							return response.arrayBuffer();
+						}
+)
+.then( bufferData =>	{
+							//# to read bytes: Cast the loaded data into a NEW uint8 Array
+							bytes_MP4_Header = new Uint8Array( bufferData );
+							//console.log( myBytes );
+							
+							//# access the HTML5 video tag by JS
+							myVideo = document.getElementById( "myVideo" );
+
+							//# select INPUT: for MP4 media file
+							document.getElementById("choose_media").addEventListener('change', onFileSelected, false);
+						}
+)
+.catch(err => console.error(err)); // catch any errors
+
+//# File load ... function handler
+function onFileSelected ( evt )
+{
+	file = evt.target.files[0];
+	
+	reader = new FileReader();
+	reader.readAsArrayBuffer(file);
+		
+	reader.onload = function(evt)
+	{
+		//console.log("Got file bytes..." );
+		file_loaded_bytes = new Uint8Array( evt.target.result );
+		
+		//# check "moov" does not exist at start of File
+		//# VLC writes 32bit uint starting at 28th byte onwards
+		temp_int = read_UInt32_BE_in_Array( file_loaded_bytes, 28 );
+		
+		if( temp_int == 0x6D6F6F76 )
+		{
+			alert("This MP4 does not appear to be a corrupted VLC recording");
+			return;
+		}
+		
+		//# find an MP4 atom (or box): "mdat" ( bytes: 0x6D646174 )
+		temp_Pos = find_32bit_Hex_in_Array( file_loaded_bytes, "6D 64 61 74", 0 );
+		console.log( "## position of MDAT... @ " + temp_Pos );
+		
+		//# If result is: IS BIGGER THAN -1 means MDAT was found
+		if(temp_Pos >= -1)
+		{
+			temp_Pos += 16; //# increase position by extra 16 bytes
+			//console.log("new pos : " + temp_Pos );
+			
+			//# check if 16th byte ahead is: 0x6 for SEI data
+			if( file_loaded_bytes[ temp_Pos ] == 0x65 )
+			{ 
+				console.log( "## found 1: IDR Keyframe... @ " + temp_Pos ); 
+				pos_nalu_IDR = temp_Pos;
+			}
+			
+			//# check if 16th byte ahead is: 0x6 for SEI data
+			else if( file_loaded_bytes[ temp_Pos ] == 0x06 )
+			{ 
+				console.log( "## found 1: SEI...  @ " + temp_Pos ); 
+				
+				temp_int = read_UInt32_BE_in_Array( file_loaded_bytes, (temp_Pos - 4) );
+				//console.log( "## Size is: " + temp_int );
+				pos_nalu_SEI = temp_Pos;
+				temp_Size = (temp_int + 4);
+				
+				//# then skip by size to check if next NALU is a keyframe
+				
+				temp_Pos += ( temp_int + 4 ); //# increase position by SIZE of this NAL Unit
+				//console.log( "## Pos is: " + temp_Pos );
+				
+				if( file_loaded_bytes[ temp_Pos ] == 0x65 )
+				{ 
+					console.log( "## found 2: IDR Keyframe... @ " + temp_Pos );
+					temp_int = read_UInt32_BE_in_Array( file_loaded_bytes, (temp_Pos - 4) );
+					pos_nalu_IDR = temp_Pos;
+					temp_Size += (temp_int + 4);
+				}
+				
+				//# copy SEI and IDR (keep their SIZE bytes included)
+				//# start position of copy is from: ( pos_nalu_SEI - 4 )
+				
+				temp_Arr = file_loaded_bytes.slice( (pos_nalu_SEI - 4), ((pos_nalu_SEI - 4) + temp_Size) )
+				console.log("temp_Arr len : " + temp_Arr.length );
+				
+				//# Updating steps ....
+				
+				//# (1) update the size @ offset 732 (is first entry in STSZ atom of MP4 header)
+				write_UInt32_BE_in_Array( temp_Arr.length, bytes_MP4_Header, 732);
+				
+				//# (2) concat copied Array "temp_Arr" into ending of "bytes_MP4_Header"
+				let bytes_MP4_Output = [...bytes_MP4_Header, ...temp_Arr];
+				
+				//# test PLAY: display first frame in video tag
+				play_Array_as_File( bytes_MP4_Output );
+				
+				//# test SAVE: saves as file to test in some media player
+				//save_Array_as_File( bytes_MP4_Output );
+				
+			}
+			
+		}
+	
+	}
+
+}
+
+function play_Array_as_File(in_arr) 
+{
+	let fileBlob = new Blob( [ Uint8Array.from( in_arr ) ], {type: "application/octet-stream"} );
+	let url = URL.createObjectURL(fileBlob);
+	
+	myVideo.src = url;
+	myVideo.load();
+}
+
+function save_Array_as_File(in_arr, fileName) 
+{
+	let fileBlob = new Blob( [ Uint8Array.from( in_arr ) ], {type: "application/octet-stream"} );
+
+	let aTag = document.createElement("a");
+	document.body.appendChild( aTag );
+	aTag.style = "display: none";
+
+	let url = URL.createObjectURL( fileBlob );
+	a.href = url; a.download; a.click();
+	
+};
+
+
+function read_UInt32_BE_in_Array( in_array, startPos )
+{
+	return ( (in_array[ startPos+0 ]) << 24 | (in_array[ startPos+1 ]) << 16 | (in_array[ startPos+2 ]) << 8 | (in_array[ startPos+3 ]) );
+}
+
+function write_UInt32_BE_in_Array( in_val, in_array, startPos )
+{
+	in_array[ startPos+0 ] = ( (in_val >> 24) & 0x000000FF );
+	in_array[ startPos+1 ] = ( (in_val >> 16) & 0x000000FF );
+	in_array[ startPos+2 ] = ( (in_val >>  8) & 0x000000FF );
+	in_array[ startPos+3 ] = ( (in_val >>  0) & 0x000000FF );
+}
+
+
+function find_32bit_Hex_in_Array( in_array, in_hex_str, startPos=0 )
+{
+	
+	//# finds a 32-bit (four bytes) sequence
+	//# input is a String containing Hex characters (for bytes written as text)
+	
+	//////////////////////////////////////////////
+	
+	let temp_Bytes_Array = []; //# holds expected 4 bytes
+	let bytes_curr_Pos = -1;
+	let bytes_End = (in_array.length - 1);
+	
+	//# clean up input Hex string
+	in_hex_str = in_hex_str.replace(/\s/g, ""); //# remove space "/s"
+	in_hex_str.replace(/0x/g, ""); //# remove "0x" (if existing)
+	
+	//# add "0" prefix IF length is ODD to make it EVEN
+	if( (in_hex_str.length % 2) !== 0 ) { in_hex_str = ("0" + in_hex_str); }
+	
+	//# uopdate a temp Array with the four byte values (as extracted from String)
+	for (let i=0; i < 4; i++) 
+	{ temp_Bytes_Array[ i ] = parseInt( in_hex_str.substr(i*2, 2), 16); }
+	
+	//# start Pos ....
+	bytes_curr_Pos = startPos;
+	
+	while(true)
+	{
+		
+		//if( bytes_curr_Pos >= bytes_End )
+		if( bytes_curr_Pos > bytes_End )
+		{
+			bytes_curr_Pos = -1; //# set to NOT FOUND
+			break;
+		}
+		
+		//# IF found matching first byte...
+		if ( in_array[ bytes_curr_Pos+0 ] == temp_Bytes_Array[0] )
+		{
+			//# check IF next 3 bytes also match...
+			if( ( in_array[ bytes_curr_Pos+1 ] == temp_Bytes_Array[1] ) &&
+				( in_array[ bytes_curr_Pos+2 ] == temp_Bytes_Array[2] ) &&
+				( in_array[ bytes_curr_Pos+3 ] == temp_Bytes_Array[3] )
+			)
+			{
+				//# stop searching and use current offset (position)
+				break;
+			}
+		}
+		
+		//# otherwise keep incrementing
+		bytes_curr_Pos++;	
+	}
+	
+	return bytes_curr_Pos;
+	
+}
+
+
+//////////////////////////////////////////////////
+
+
+</script> 
+
+</body> 
+</html>
