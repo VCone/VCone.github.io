@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masking with WebGL</title>
+    
+    
+</head>
+
+
+<style>
+
+.body { background-color: #000000; }
+
+.clip-svg { clip-path: url(#myClip); }
+
+</style>
+
+<body style="overflow: hidden">
+    <video 	id="obj_video" width="10"
+		muted loop controls
+		>
+<source type="video/mp4"
+		src="video_with_mask_pixels.mp4"
+		>
+</video>
+    <br><br>
+    
+<svg width="0" height="0">
+<defs>
+	<clipPath id="myClip">
+	<polygon fill="#ffffff" points="0 0, 960 0, 960 1080, 0 1080"></polygon>
+	</clipPath>
+</defs>
+</svg>
+
+   
+   <canvas id="obj_canvas" class="clip-svg"  width="1920" height="800" 
+   style="pointer-events: none; z-index: 2; position:absolute; top: -50px; left: 10px">
+   </canvas>
+    
+	
+	<text style="color: white; font-size: 28px; z-index: 1; position:absolute; top: 300px; left: 80px"> 
+	This is some example text for testing the Alpha channel ... <br><br>
+	This is some example text for testing the Alpha channel ... <br><br>
+	This is some example text for testing the Alpha channel ... <br><br>
+	This is some example text for testing the Alpha channel ... 
+	</text>
+
+<!-- ########## Shader code ###### -->
+<!-- ### Shader code here -->
+
+
+
+
+<!-- Vertex shader program -->
+<script id="shader-vs" type="x-shader/x-vertex">
+
+    attribute mediump vec2 aVertexPosition;
+    varying mediump vec2 vDirection;
+
+    void main( void ) 
+    {
+        gl_Position = vec4(aVertexPosition, 1.0, 1.0) * 2.0;
+        vDirection = aVertexPosition;
+    }
+
+</script>
+
+<!-- Fragment shader program -->
+<script id="shader-fs" type="x-shader/x-fragment">
+
+//<!-- //## code for pixel effects goes here if needed -->
+
+//# these two vars will access 
+varying mediump vec2 vDirection;
+uniform sampler2D uSampler;
+
+mediump vec4 my_FragColor_video = vec4(1.0, 1.0, 1.0, 1.0);
+mediump vec4 my_FragColor_mask = vec4(1.0, 1.0, 1.0, 1.0);
+
+void main(void) 
+{
+    //# get current video pixel's color (no FOR-loops needed like in JS Canvas)
+	//# "gl_FragColor" is a built-in 2D pointer that represents the current GPU pixel at pos x/y
+    //# eg: gl_FragColor = texture2D( someX, someY );
+	
+	
+	if( (vDirection.x * 0.5) < 0.005) //# when GPU is scanning at first half of image size 
+	{
+		//# read from first half
+		my_FragColor_video = texture2D(uSampler, vec2( (vDirection.x * 0.5 ) + 0.5 , (vDirection.y * 0.5 ) + 0.5) );
+		
+		//# read from second half
+		my_FragColor_mask = texture2D(uSampler, vec2( (vDirection.x * 0.5 ) + 1.0 , (vDirection.y * 0.5 ) + 0.5) );
+	}
+	
+	//# first put te video's pixel colour
+	gl_FragColor = my_FragColor_video;
+	
+	//# then alpha is from using "green" of mask, but can use any r/g/b channel of mask 
+	gl_FragColor.a = my_FragColor_mask.g; 
+	
+}
+
+</script>
+
+<!-- add vc1_gpu_canvas_01.js functions -->
+<script id="gpu_init_code" type="text/javascript" 
+src="vc1_gpu_canvas_01.js">
+</script> 
+
+
+<!-- ### END Shader code... -->
+
+
+<script>
+
+//# WebGL setup
+
+var video = document.getElementById("obj_video");
+var gpu_canvas = document.getElementById("obj_canvas");
+var gpu_ctx = document.getElementById("obj_canvas");
+var gpu_init_code = document.getElementById('gpu_init_code');
+
+//### setting a CSS Style for the video object
+video.style.visibility = "hidden"; //# is "hidden" or else "visible"
+//canvas.style.border = "2px solid yellow"; //# shows canvas outline to check sizing
+
+//### setting a CSS Style for the document background colour
+document.body.style.backgroundColor = "#301040"; //"#8000f0"; //"#200020";
+
+document.onload = gpu_init_setup();
+
+
+
+function gpu_init_setup()
+{
+	//## any startup code that you need ...
+	
+	console.log("document is now ready ...");
+	
+}
+
+
+</script>
+
+<script>
+
+//# Vars for video frame grabbing when system/browser provides a new frame
+var requestAnimationFrame = (window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                            window.webkitRequestAnimationFrame || window.msRequestAnimationFrame);
+
+var cancelAnimationFrame = (window.cancelAnimationFrame || window.mozCancelAnimationFrame);
+
+///////////////////////////////////////////////
+
+draw_GPU_vid_frame();
+video.play();
+
+function draw_GPU_vid_frame( ) 
+{
+    //# video is ready (can display pixels)
+    if( video.readyState >= 3 )
+    {
+        updateTexture(); //# update pixels with current video frame's pixels...
+        
+        gl.useProgram(program); //# apply the program
+    
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionsBuffer);
+        gl.vertexAttribPointer(attributes['aVertexPosition'], 2, gl.FLOAT, false, 0, 0);
+        
+        //# Specify the texture to map onto the faces.
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.uniform1i(uniforms['uSampler'], 0);
+        
+        //# Draw GPU
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, verticesIndexBuffer);
+        gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
+    }
+    
+    //# re-capture the next frame... basically the function loops itself ( "draw_GPU_vid_frame" )
+    //# consider adding event listener for video pause to set value as... cancelAnimationFrame( takeScreenshot ); 
+    requestAnimationFrame( draw_GPU_vid_frame ); 
+    
+}
+
+</script>
+
+</body>
+
+</html>
